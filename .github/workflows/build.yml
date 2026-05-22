@@ -20,10 +20,10 @@ jobs:
 
     - name: Instalando dependências de build do Android
       run: |
-        sudo apt-get update
-        sudo apt-get install -y libsqlite3-dev install cython3 lld
+       sudo apt-get update
+       sudo apt-get install -y libsqlite3-dev cython3 lld
         pip install --upgrade pip
-        pip install buildozer setuptools cython
+        pip install buildozer setuptools cython 
 
     - name: Compilando o APK com Buildozer
       run: |
