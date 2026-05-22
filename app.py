@@ -16,7 +16,7 @@ class KarenHUD(FloatLayout):
         super(KarenHUD, self).__init__(**kwargs)
         
         # Inicializa a API do Gemini
-        self.api_key = os.environ.get("GEMINI_API_KEY", "")
+        self.api_key = os.environ.get("AIzaSyDyNqmgFeASGB-YCRa8gLmE2-yA5L5j1tA", "")
         self.chat_session = None
         if self.api_key:
             try:
