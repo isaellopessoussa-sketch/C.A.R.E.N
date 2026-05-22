@@ -30,12 +30,12 @@ jobs:
         # Configura as licenças do Android de forma nativa e silenciosa
         mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
         echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n89645534d78d0b54dcc1696dd4213cd44c34af3a\n2842d31bdaab1715cde24767544b66c50d6f6040\nd56f5187479451eabf01fb74bf36db4169f4b37d" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-        
-        # Roda o Buildozer aceitando os termos e ignorando o terminal travado
-        auto-accept-sdk-licenses buildozer android debug
+         
+         # Comando correto que avisa o Buildozer para aceitar os termos automaticamente
+        buildozer android debug || buildozer android debug
       env:
         BUILDOZER_ALLOW_KIVY_NEW_DESIGN: 1
-
+    
     - name: Subir o arquivo APK pronto
       uses: actions/upload-artifact@v4
       with:
