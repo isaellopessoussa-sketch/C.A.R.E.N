@@ -20,10 +20,18 @@ jobs:
 
     - name: Instalando todas as dependências do Android e Kivy
       run: |
-        sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk i686-linux-gnu-compat \
-        libncurses6 libnspr4 libstdc++6 libgtk-3-0 libasound2 libsqlite3-dev \
-        lld cmake pkg-config libffi-dev indextools autoconf automake libtool
+        # Corrige problemas de mirrors do apt que causam o erro 100
+        sudo rm -rf /var/lib/apt/lists/*
+        sudo apt-get clean
+        
+        # Atualiza o sistema ignorando repositórios quebrados
+        sudo apt-get update --allow-releaseinfo-change || true
+        
+        # Instala apenas as ferramentas essenciais e modernas do SDK
+        sudo apt-get install -y git zip unzip openjdk-17-jdk \
+        libsqlite3-dev lld cmake pkg-config libffi-dev autoconf automake libtool
+        
+        # Atualiza o pip e ferramentas de empacotamento
         pip install --upgrade pip
         pip install buildozer setuptools cython
 
