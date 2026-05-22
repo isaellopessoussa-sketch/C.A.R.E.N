@@ -10,9 +10,10 @@ requirements = python3,kivy,google-genai
 orientation = portrait
 fullscreen = 1
 android.archs = arm64-v8a
-android.api = 34
-android.minapi = 21
-android.ndk = 27.3.13750724
+
+# Deixando o buildozer escolher os links de download corretos automaticamente
+# android.api = 33
+# android.ndk_path = 
 
 [buildozer]
 log_level = 2
