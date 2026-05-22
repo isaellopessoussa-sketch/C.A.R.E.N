@@ -1,1 +1,12 @@
+# Ambientes virtuais
+.venv/
+venv/
+ENV/
+env/
 
+# Python cache
+__pycache__/
+*.pyc
+
+# Variáveis de ambiente secretas (NUNCA envie sua chave de API)
+.env
