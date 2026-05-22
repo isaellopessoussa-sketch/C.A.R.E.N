@@ -7,30 +7,34 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Baixando o repositório
       uses: actions/checkout@v4
 
-    - name: Configurando o Python Estável
+    - name: Configurando o Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
-    - name: Instalando dependências do sistema
+    - name: Instalando dependências do Android e Buildozer
       run: |
         sudo apt-get update
         sudo apt-get install -y git zip unzip openjdk-17-jdk libsqlite3-dev lld cmake pkg-config libffi-dev autoconf automake libtool
         pip install --upgrade pip
-        pip install setuptools cython==0.29.36 buildozer
+        pip install "cython<3.0.0" wheel setuptools buildozer
 
-    - name: Compilando o APK com a Action Oficial do Kivy
-      uses: ArtemSBulgakov/buildozer-action@v1
-      with:
-        workdir: .
-        buildozer_version: stable
-        command: buildozer android debug
+    - name: Compilando o APK
+      run: |
+        # Configura as licenças do Android de forma nativa e silenciosa
+        mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+        echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n89645534d78d0b54dcc1696dd4213cd44c34af3a\n2842d31bdaab1715cde24767544b66c50d6f6040\nd56f5187479451eabf01fb74bf36db4169f4b37d" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+        
+        # Roda o Buildozer aceitando os termos e ignorando o terminal travado
+        auto-accept-sdk-licenses buildozer android debug
+      env:
+        BUILDOZER_ALLOW_KIVY_NEW_DESIGN: 1
 
     - name: Subir o arquivo APK pronto
       uses: actions/upload-artifact@v4
