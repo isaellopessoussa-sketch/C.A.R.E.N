@@ -1,0 +1,9 @@
+{
+  "name": "org.homemaranha.karen",
+  "displayName": "KarenAI",
+  "version": "1.0.0",
+  "description": "HUD AI da Karen",
+  "main": "index.html",
+  "dependencies": {},
+  "devDependencies": {}
+}
