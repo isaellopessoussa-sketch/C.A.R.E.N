@@ -1,0 +1,38 @@
+name: Criar APK da Karen
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Baixando o repositório
+      uses: actions/checkout@v4
+
+    - name: Configurando o Python
+      uses: actions/setup-python@v5
+      with:
+        python-python-version: '3.11'
+
+    - name: Instalando dependências de build do Android
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libsqlite3-dev install cython3 lld
+        pip install --upgrade pip
+        pip install buildozer setuptools cython
+
+    - name: Compilando o APK com Buildozer
+      run: |
+        buildozer android debug
+      env:
+        BUILDOZER_ALLOW_KIVY_NEW_DESIGN: 1
+
+    - name: Subir o arquivo APK pronto
+      uses: actions/upload-artifact@v4
+      with:
+        name: Karen-AI-APK
+        path: bin/*.apk
