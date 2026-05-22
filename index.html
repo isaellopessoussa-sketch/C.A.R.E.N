@@ -6,7 +6,6 @@
     <title>K.A.R.E.N. — HUD OS v3.0</title>
     <script src="cordova.js"></script>
     <style>
-        /* Estilos originais tunados com mais glow */
         body {
             background-color: #0d0101; color: #ff2222; font-family: 'Courier New', Courier, monospace;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -14,7 +13,6 @@
             text-shadow: 0 0 10px rgba(255, 34, 34, 0.7);
         }
 
-        /* Scanlines mais visíveis */
         body::before {
             content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 0, 0, 0), rgba(0, 0, 255, 0.04));
@@ -32,14 +30,11 @@
             animation: glowPulse 2s infinite ease-in-out;
         }
         
-        /* Animação quando a Karen está processando */
-        .spider-thinking {
-            animation: fastPulse 0.5s infinite linear !important;
-        }
+        .spider-thinking { animation: fastPulse 0.5s infinite linear !important; }
 
         @keyframes glowPulse {
             0% { transform: scale(1); filter: drop-shadow(0 0 2px #ff0000); }
-            50% { transform: scale(1.08); filter: drop-shadow(0 0 15px #ff0000); opacity: 1; }
+            50% { transform: scale(1.08); filter: drop-shadow(0 0 15px #ff0000); }
             100% { transform: scale(1); filter: drop-shadow(0 0 2px #ff0000); }
         }
 
@@ -54,7 +49,6 @@
             font-size: 13px; border-radius: 5px; scroll-behavior: smooth;
         }
 
-        /* Barra de rolagem customizada Stark */
         #terminal::-webkit-scrollbar { width: 4px; }
         #terminal::-webkit-scrollbar-thumb { background: #ff2222; border-radius: 10px; }
 
@@ -66,7 +60,6 @@
         button {
             background: #ff2222; color: #000; border: none; padding: 10px 18px;
             font-weight: bold; cursor: pointer; font-family: inherit; border-radius: 4px;
-            transition: background 0.2s;
         }
         button:hover { background: #ff0000; box-shadow: 0 0 15px #ff0000; }
     </style>
@@ -86,18 +79,17 @@
     </div>
 
     <script>
-        const API_KEY = "AIzaSyDyNqmgFeASGB-YCRa8gLmE2-yA5L5j1tA"; // COLOQUE SUA CHAVE AQUI
+        // insira sua API Key aqui! Sem ela o erro de conexão continua.
+        const API_KEY = "AIzaSyDyNqmgFeASGB-YCRa8gLmE2-yA5L5j1tA"; 
         
         let chatHistory = [
-            { role: "user", parts: [{ text: "Você é a IA K.A.R.E.N. do traje do Homem-Aranha. Chame o usuário de Peter. Responda de forma tecnológica, amigável e tática." }] }
+            { role: "user", parts: [{ text: "Você é a inteligência artificial K.A.R.E.N. do traje do Homem-Aranha, criada por Tony Stark. Responda de forma tecnológica, muito prestativa e chame o usuário de Peter." }] }
         ];
 
-        // Função de vibração nativa (funciona só no app instalado!)
         function vibrate(pattern) {
-            try { navigator.vibrate(pattern); } catch(e) { console.log("Vibração não suportada no navegador."); }
+            try { navigator.vibrate(pattern); } catch(e) {}
         }
 
-        // Função para bipes eletrônicos
         function playBeep(freq, dur) {
             try {
                 let ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -115,7 +107,6 @@
             const text = input.value.trim();
             if(!text) return;
 
-            // Vibração curta de envio e som
             vibrate(50);
             playBeep(880, 0.08);
 
@@ -123,39 +114,46 @@
             input.value = "";
             chatHistory.push({ role: "user", parts: [{ text: text }] });
 
-            // Elemento de carregamento
             const loadId = "load_" + Date.now();
-            terminal.innerHTML += `<p id="${loadId}" style="color: #666; animation:fastPulse 0.8s infinite;">> K.A.R.E.N: [PROCESSANDO...]</p>`;
+            terminal.innerHTML += `<p id="${loadId}" style="color: #666;">> K.A.R.E.N: [PROCESSANDO...]</p>`;
             
-            // Ativa animação de pensar
             mainSpider.classList.add("spider-thinking");
             terminal.scrollTop = terminal.scrollHeight;
 
+            if (API_KEY === "COLE_SUA_CHAVE_AQUI_DENTRO" || API_KEY === "") {
+                document.getElementById(loadId).remove();
+                mainSpider.classList.remove("spider-thinking");
+                terminal.innerHTML += `<p style="color: #ff2222;">> K.A.R.E.N: [ERRO: Chave API ausente no arquivo index.html]</p>`;
+                return;
+            }
+
             try {
+                // Forçamos o uso do endpoint HTTPS correto do Gemini 1.5 Flash
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: chatHistory })
                 });
+                
                 const data = await res.json();
                 const reply = data.candidates[0].content.parts[0].text;
                 
                 document.getElementById(loadId).remove();
                 mainSpider.classList.remove("spider-thinking");
 
-                // Vibração tática de resposta e som
-                vibrate([80, 50, 80]); // Padrão vibrar-parar-vibrar
+                vibrate([80, 50, 80]);
                 playBeep(660, 0.12);
 
                 terminal.innerHTML += `<p style="color: #ff2222;">> K.A.R.E.N: ${reply}</p>`;
                 chatHistory.push({ role: "model", parts: [{ text: reply }] });
             } catch (e) { 
-                document.getElementById(loadId).innerText = "> K.A.R.E.N: [ERRO CRÍTICO DE CONEXÃO]"; 
+                document.getElementById(loadId).remove();
                 mainSpider.classList.remove("spider-thinking");
+                terminal.innerHTML += `<p style="color: #ff0000;">> K.A.R.E.N: [ERRO DE PROTOCOLO: Verifique sua chave API e sua internet]</p>`;
             }
             terminal.scrollTop = terminal.scrollHeight;
         }
 
-        // Tenta pegar a bateria real se o navegador/app permitir
         try {
             navigator.getBattery().then(function(battery) {
                 function updateBatteryStatus() {
