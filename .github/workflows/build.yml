@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Baixando o repositório
@@ -16,18 +16,28 @@ jobs:
     - name: Configurando o Python
       uses: actions/setup-python@v5
       with:
-        python-python-version: '3.11'
+        python-version: '3.11'
 
-    - name: Instalando dependências de build do Android
+    - name: Instalando todas as dependências do Android e Kivy
       run: |
-       sudo apt-get update
-       sudo apt-get install -y libsqlite3-dev cython3 lld
+        sudo apt-get update
+        sudo apt-get install -y git zip unzip openjdk-17-jdk i686-linux-gnu-compat \
+        libncurses6 libnspr4 libstdc++6 libgtk-3-0 libasound2 libsqlite3-dev \
+        lld cmake pkg-config libffi-dev indextools autoconf automake libtool
         pip install --upgrade pip
-        pip install buildozer setuptools cython 
+        pip install buildozer setuptools cython
 
     - name: Compilando o APK com Buildozer
       run: |
-        buildozer android debug
+        # Cria a pasta de licenças e aceita os termos do SDK do Android
+        mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+        echo -e "\n89645534d78d0b54dcc1696dd4213cd44c34af3a\n2842d31bdaab1715cde24767544b66c50d6f6040\nd56f5187479451eabf01fb74bf36db4169f4b37d\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+        
+        # Limpa restos de builds anteriores que possam ter quebrado
+        buildozer android clean
+        
+        # Executa o build forçando o "sim" para qualquer pergunta do terminal
+        yes | buildozer android debug
       env:
         BUILDOZER_ALLOW_KIVY_NEW_DESIGN: 1
 
