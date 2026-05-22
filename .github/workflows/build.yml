@@ -27,12 +27,13 @@ jobs:
 
     - name: Compilando o APK com Buildozer
       run: |
-        # Aceita os termos de uso do Android SDK automaticamente
+        # Cria as pastas e aceita todas as licenças possíveis do Android SDK antecipadamente
         mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-        echo -e "\n89645534d78d0b54dcc1696dd4213cd44c34af3a\n2842d31bdaab1715cde24767544b66c50d6f6040\nd56f5187479451eabf01fb74bf36db4169f4b37d\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+        echo -e "\n89645534d78d0b54dcc1696dd4213cd44c34af3a\n2842d31bdaab1715cde24767544b66c50d6f6040\nd56f5187479451eabf01fb74bf36db4169f4b37d\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n45f2d184b75467ae2f4692797e88b9075bc9be74" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+        echo -e "\n8491671c54af1f9a254de00e978f5435650af75b" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
         
-        # Executa o build direto aceitando todas as configurações pendentes
-        yes | buildozer android debug
+        # Roda o buildozer de forma direta e sem comandos de pipe que quebram o terminal
+        buildozer android debug
       env:
         BUILDOZER_ALLOW_KIVY_NEW_DESIGN: 1
 
