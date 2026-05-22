@@ -8,13 +8,11 @@
         Peter Parker
     </author>
     <content src="index.html" />
+    
     <access origin="*" />
+    <allow-navigation href="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
-    <allow-intent href="tel:*" />
-    <allow-intent href="sms:*" />
-    <allow-intent href="mailto:*" />
-    <allow-intent href="geo:*" />
 
     <plugin name="cordova-plugin-vibration" spec="^3.1.1" />
     <plugin name="cordova-plugin-battery-status" spec="^2.0.3" />
@@ -22,5 +20,6 @@
     <platform name="android">
         <allow-intent href="market:*" />
         <preference name="Orientation" value="portrait" />
+        <preference name="android-targetSdkVersion" value="34" />
     </platform>
 </widget>
