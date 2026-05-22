@@ -1,4 +1,4 @@
-name: Criar APK da Karen
+name: Criar APK da Karen v3
 
 on:
   push:
@@ -18,31 +18,38 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Configurando o Java (Requisito do Android)
+    - name: Configurando o Java (Android Requirement)
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
         java-version: '17'
 
-    - name: Instalando o Cordova e Dependências
-      run: |
-        npm install -g cordova
-        npm install
+    - name: Instalando o Cordova Globalmente
+      run: npm install -g cordova
 
     - name: Criando Projeto Android Nativo
       run: |
-        # Inicializa a estrutura de aplicativo para a Karen
-        cordova create cordova_project org.homemaranha.karen KarenAI
+        # Inicializa a estrutura de aplicativo
+        cordova create cordova_project com.starkindustries.karen KarenAI
         cd cordova_project
         cordova platform add android
-        
-        # Copia os seus arquivos visuais para a pasta do aplicativo
-        cp -r ../index.html ../package.json ./www/
 
-    - name: Compilando o APK Final (Debug Mode)
+    - name: Copiando Arquivos e Config
+      run: |
+        # Substitui o index e config originais pelos do seu repositório
+        cp ../index.html ./cordova_project/www/
+        cp ../config.xml ./cordova_project/
+
+    - name: Adicionando Plugins Nativos (Vibração)
       run: |
         cd cordova_project
-        # Aceita os termos do SDK de forma silenciosa e compila o APK padrão
+        cordova plugin add cordova-plugin-vibration
+        cordova plugin add cordova-plugin-battery-status
+
+    - name: Compilando o APK (Debug Mode)
+      run: |
+        cd cordova_project
+        # Aceita os termos do SDK e compila o APK padrão
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
         cordova build android --device
 
