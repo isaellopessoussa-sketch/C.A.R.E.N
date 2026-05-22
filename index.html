@@ -130,7 +130,6 @@
                 terminal.innerHTML += `<p style="color: #ff2222;">> K.A.R.E.N: [ALERTA DE SISTEMA: Insira a chave do Gemini no index.html]</p>`;
                 return;
             }
-
             try {
                 // Endpoint oficial 1.5-flash com tratamento rigoroso de cabeçalhos
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cleanKey}`, {
