@@ -18,40 +18,23 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Instalando dependências do Android e Buildozer
+    - name: Instalando dependências do sistema
       run: |
         sudo apt-get update
         sudo apt-get install -y git zip unzip openjdk-17-jdk libsqlite3-dev lld cmake pkg-config libffi-dev autoconf automake libtool
         pip install --upgrade pip
         pip install "cython<3.0.0" wheel setuptools buildozer
 
-    - name: Forçando a instalação do Android Sdkmanager
+    - name: Aceitando licenças do Android nativo
       run: |
-        # Cria a estrutura de pastas que o Buildozer espera encontrar
-        mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest
-        mkdir -p ~/.buildozer/android/platform/android-sdk/tools/bin
-        
-        # Baixa as ferramentas oficiais do Google
-        wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline.zip
-        unzip -q cmdline.zip
-        
-        # Copia o sdkmanager para onde o Buildozer teimosamente procura
-        cp -r cmdline-tools/* ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/ || true
-        cp -r cmdline-tools/bin/* ~/.buildozer/android/platform/android-sdk/tools/bin/ || true
-        
-        # Injeta as licenças aceitas direto na pasta do SDK
-        mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-        echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n89645534d78d0b54dcc1696dd4213cd44c34af3a\n2842d31bdaab1715cde24767544b66c50d6f6040\nd56f5187479451eabf01fb74bf36db4169f4b37d" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+        # Aceita os termos usando o sdkmanager nativo que já existe na máquina do GitHub
+        yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-    - name: Compilando o APK
+    - name: Compilando o APK com caminhos globais
       run: |
-        # Roda o build direto agora que as pastas foram corrigidas
+        # Executa o buildozer apontando para o SDK estável que vimos no seu log
         buildozer android debug
       env:
         BUILDOZER_ALLOW_KIVY_NEW_DESIGN: 1
-
-    - name: Subir o arquivo APK pronto
-      uses: actions/upload-artifact@v4
-      with:
-        name: Karen-AI-APK
-        path: bin/*.apk
+        ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        ANDROID_NDK_ROOT: /usr/local/lib/android/sdk/ndk/27.3.13750724
