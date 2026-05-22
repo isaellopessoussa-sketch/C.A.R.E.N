@@ -79,11 +79,12 @@
     </div>
 
     <script>
-        // insira sua API Key aqui! Sem ela o erro de conexão continua.
+        // substitua TODO o texto abaixo pela sua chave real, mantendo as aspas.
+        // Exemplo correto: const API_KEY = "AIzaSyBlahBlahBlah...";
         const API_KEY = "AIzaSyDyNqmgFeASGB-YCRa8gLmE2-yA5L5j1tA"; 
         
         let chatHistory = [
-            { role: "user", parts: [{ text: "Você é a inteligência artificial K.A.R.E.N. do traje do Homem-Aranha, criada por Tony Stark. Responda de forma tecnológica, muito prestativa e chame o usuário de Peter." }] }
+            { role: "user", parts: [{ text: "Você é a inteligência artificial K.A.R.E.N. do traje do Homem-Aranha, criada por Tony Stark. Responda de forma curta, tecnológica, muito prestativa e sempre chame o usuário de Peter." }] }
         ];
 
         function vibrate(pattern) {
@@ -115,17 +116,67 @@
             chatHistory.push({ role: "user", parts: [{ text: text }] });
 
             const loadId = "load_" + Date.now();
-            terminal.innerHTML += `<p id="${loadId}" style="color: #666;">> K.A.R.E.N: [PROCESSANDO...]</p>`;
+            terminal.innerHTML += `<p id="${loadId}" style="color: #666; animation: fastPulse 0.8s infinite;">> K.A.R.E.N: [PROCESSANDO...]</p>`;
             
             mainSpider.classList.add("spider-thinking");
             terminal.scrollTop = terminal.scrollHeight;
 
-            if (API_KEY === "COLE_SUA_CHAVE_AQUI_DENTRO" || API_KEY === "") {
+            // Remove espaços acidentais que possam ter vindo ao copiar a chave
+            const cleanKey = API_KEY.trim();
+
+            if (cleanKey === "COLE_SUA_CHAVE_AQUI_DENTRO" || cleanKey === "") {
                 document.getElementById(loadId).remove();
                 mainSpider.classList.remove("spider-thinking");
-                terminal.innerHTML += `<p style="color: #ff2222;">> K.A.R.E.N: [ERRO: Chave API ausente no arquivo index.html]</p>`;
+                terminal.innerHTML += `<p style="color: #ff2222;">> K.A.R.E.N: [ALERTA DE SISTEMA: Insira a chave do Gemini no index.html]</p>`;
                 return;
             }
+
+            try {
+                // Endpoint oficial 1.5-flash com tratamento rigoroso de cabeçalhos
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cleanKey}`, {
+                    method: 'POST', 
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ contents: chatHistory })
+                });
+                
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                
+                const data = await res.json();
+                const reply = data.candidates[0].content.parts[0].text;
+                
+                document.getElementById(loadId).remove();
+                mainSpider.classList.remove("spider-thinking");
+
+                vibrate([80, 50, 80]);
+                playBeep(660, 0.12);
+
+                terminal.innerHTML += `<p style="color: #ff2222;">> K.A.R.E.N: ${reply}</p>`;
+                chatHistory.push({ role: "model", parts: [{ text: reply }] });
+            } catch (e) { 
+                document.getElementById(loadId).remove();
+                mainSpider.classList.remove("spider-thinking");
+                terminal.innerHTML += `<p style="color: #ff0000;">> K.A.R.E.N: [FALHA DE AUTENTICAÇÃO: Verifique os caracteres da sua chave API no arquivo]</p>`;
+                console.error(e);
+            }
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        try {
+            navigator.getBattery().then(function(battery) {
+                function updateBatteryStatus() {
+                    let perc = (battery.level * 100).toFixed(0);
+                    document.getElementById("suitStatus").innerText = `[ TRAJE: ONLINE | ENERGIA CÉLULA: ${perc}% ]`;
+                }
+                updateBatteryStatus();
+                battery.addEventListener('levelchange', updateBatteryStatus);
+            });
+        } catch(e) {}
+    </script>
+            
 
             try {
                 // Forçamos o uso do endpoint HTTPS correto do Gemini 1.5 Flash
