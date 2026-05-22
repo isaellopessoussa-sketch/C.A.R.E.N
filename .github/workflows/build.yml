@@ -39,15 +39,15 @@ jobs:
         # Copia os seus arquivos visuais para a pasta do aplicativo
         cp -r ../index.html ../package.json ./www/
 
-    - name: Compilando o APK Final
+    - name: Compilando o APK Final (Debug Mode)
       run: |
         cd cordova_project
-        # Aceita os termos do SDK de forma silenciosa e compila
+        # Aceita os termos do SDK de forma silenciosa e compila o APK padrão
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-        cordova build android --device --release
+        cordova build android --device
 
     - name: Subir o APK Pronto
       uses: actions/upload-artifact@v4
       with:
         name: Karen-AI-APK
-        path: cordova_project/platforms/android/app/build/outputs/apk/release/*.apk
+        path: cordova_project/platforms/android/app/build/outputs/apk/debug/*.apk
