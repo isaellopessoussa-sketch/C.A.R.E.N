@@ -25,16 +25,19 @@ jobs:
         pip install --upgrade pip
         pip install "cython<3.0.0" wheel setuptools buildozer
 
-    - name: Aceitando licenças do Android nativo
+    - name: Compilando o APK com Buildozer
       run: |
-        # Aceita os termos usando o sdkmanager nativo que já existe na máquina do GitHub
-        yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
-
-    - name: Compilando o APK com caminhos globais
-      run: |
-        # Executa o buildozer apontando para o SDK estável que vimos no seu log
+        # Cria as pastas de licença e aceita os termos automaticamente antes de rodar
+        mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+        echo -e "\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n89645534d78d0b54dcc1696dd4213cd44c34af3a\n2842d31bdaab1715cde24767544b66c50d6f6040\nd56f5187479451eabf01fb74bf36db4169f4b37d" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+        
+        # Roda o build de forma padrão e limpa
         buildozer android debug
       env:
         BUILDOZER_ALLOW_KIVY_NEW_DESIGN: 1
-        ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
-        ANDROID_NDK_ROOT: /usr/local/lib/android/sdk/ndk/27.3.13750724
+
+    - name: Subir o arquivo APK pronto
+      uses: actions/upload-artifact@v4
+      with:
+        name: Karen-AI-APK
+        path: bin/*.apk
