@@ -124,7 +124,7 @@
             // Remove espaços acidentais que possam ter vindo ao copiar a chave
             const cleanKey = API_KEY.trim();
 
-            if (cleanKey === "COLE_SUA_CHAVE_AQUI_DENTRO" || cleanKey === "") {
+            if (cleanKey === "AIzaSyDyNqmgFeASGB-YCRa8gLmE2-yA5L5j1tA" || cleanKey === "") {
                 document.getElementById(loadId).remove();
                 mainSpider.classList.remove("spider-thinking");
                 terminal.innerHTML += `<p style="color: #ff2222;">> K.A.R.E.N: [ALERTA DE SISTEMA: Insira a chave do Gemini no index.html]</p>`;
@@ -175,10 +175,8 @@
             });
         } catch(e) {}
     </script>
-            
-
-            try {
-                // Forçamos o uso do endpoint HTTPS correto do Gemini 1.5 Flash
+          try {
+             // Forçamos o uso do endpoint HTTPS correto do Gemini 1.5 Flash
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' },
